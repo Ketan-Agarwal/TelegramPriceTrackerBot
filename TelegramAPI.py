@@ -63,12 +63,9 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 await context.bot.send_message(chat_id=update.effective_chat.id, text="Please input your valid 6 digit pincode.")
         elif update.message.reply_to_message.message_id == desired_price.message_id:
             context.user_data['desired_price'] = update.message.text
-            if is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid')) == False:
-                add_product_sql(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('desired_price'), price_data1['prices']['price'], price_data1["prices"]["highest_price"], price_data1["prices"]["average_price"], price_data1["prices"]["lowest_price"], price_data1['name'], context.user_data.get('website'), context.user_data.get('fkpid'), context.user_data.get('fkslug'))
-                await context.bot.send_message(chat_id=update.effective_chat.id,text=f"We will send you notification when your product price will fall below your Desired price.")
-                await main_menu(update, context)
-            else:
-                await context.bot.send_message(chat_id=update.effective_chat.id, text=f"We are already tracking your product with ID {context.user_data.get('pid')}. We will send you the alert when your product will fall below your Desired price of {is_product_present(context.user_data.get('uid'), context.user_data.get('pid'))[0][2]}")
+            add_product_sql(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('desired_price'), price_data1['prices']['price'], price_data1["prices"]["highest_price"], price_data1["prices"]["average_price"], price_data1["prices"]["lowest_price"], price_data1['name'], context.user_data.get('website'), context.user_data.get('fkpid'), context.user_data.get('fkslug'), context.user_data.get('eklg_link'))
+            await context.bot.send_message(chat_id=update.effective_chat.id,text=f"We will send you notification when your product price will fall below your Desired price.")
+            await main_menu(update, context)
 
         else:
             await context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
@@ -102,22 +99,34 @@ async def show_watchlist(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global pincode, desired_price, price_data1
     message = await context.bot.send_message(chat_id=update.effective_chat.id, text='5')
-    for i in range(5, 0, -1):
+    for i in range(4, 0, -1):
         time.sleep(1)
         await context.bot.edit_message_text(chat_id=message.chat_id, message_id=message.message_id, text=str(i))
     await context.bot.delete_message(chat_id=message.chat_id, message_id=message.message_id)
-    price_data1 = price_data(context.user_data.get('link'))
-    print("Price Data------", price_data1)
-    if price_data1 != None:
-        if context.user_data.get('website') == 'Amazon':
+    if is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid')) == False:
+    
+        price_data1 = price_data(context.user_data.get('link'))
+        print("Price Data------", price_data1)
+        if price_data1 != None:
+            if context.user_data.get('website') == 'Amazon':
 
-            await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Amazon](https://www.amazon.in/dp/{context.user_data.get('pid')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
-        elif context.user_data.get('website') == 'Flipkart':
-            context.user_data['fklink'] = f"https://www.flipkart.com/{context.user_data.get('fkslug')}/p/{context.user_data.get('fkpid')}"
-            await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Flipkart]({context.user_data.get('fklink')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
-        pincode = await context.bot.send_message(chat_id=update.effective_chat.id, text="Your Pincode? (for product availability check) (in reply to this message)")
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Amazon](https://www.amazon.in/dp/{context.user_data.get('pid')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
+            elif context.user_data.get('website') == 'Flipkart':
+                context.user_data['fklink'] = f"https://www.flipkart.com/{context.user_data.get('fkslug')}/p/{context.user_data.get('fkpid')}"
+                eklg_link = eklg.create_link(context.user_data.get('link'))
+                if eklg_link != None:
+                    context.user_data['eklg_link'] = eklg_link
+                    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Flipkart]({context.user_data.get('eklg_link')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
+                
+                else:
+                    context.user_data['eklg_link'] = None
+                    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Flipkart]({context.user_data.get('fklink')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
+            pincode = await context.bot.send_message(chat_id=update.effective_chat.id, text="Your Pincode? (for product availability check) (in reply to this message)")
+        else:
+            await context.bot.send_message(chat_id=update.effective_chat.id, text="Hmmm\nI was not able to find any product for the given link. Please recheck the link.")
     else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Hmmm\nI was not able to find any product for the given link. Please recheck the link.")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"We are already tracking your product. We will send you the alert when your product will fall below your Desired price of {is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid'))[0][2]}")
+
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
         [

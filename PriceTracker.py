@@ -17,30 +17,34 @@ def price_data(link):
     }
 
     response = requests.post('https://pricehistory.app/api/search', headers=headers, json=json_data)
-    code = response.json()["code"]
-    print(code)
-    response = requests.get(f'https://pricehistory.app/p/{code}')
-    soup = bs4.BeautifulSoup(response.text, 'html.parser')
-    #mrp = soup.find('table', {"class":"ph-table-offer"}).find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').text.strip()
-    price = soup.find('table', {"class":"ph-table-offer"}).find('td').text.strip()
-    lowest_price = soup.find('table', {"class":"ph-table-overview"}).find('td', {'class':'text-success'}).text.strip()
-    average_price = soup.find('table', {"class":"ph-table-overview"}).find('td', {'class':'text-primary'}).text.strip()
-    highest_price = soup.find('table', {"class":"ph-table-overview"}).find('td', {'class':'text-danger'}).text.strip()
-    name = soup.find('h1').text.strip()
-    price_int = int(re.sub('[^0-9]', '', price))
+    print("response.content--------", response.content)
+    try:
+        code = response.json()["code"]
+        print(code)
+        response = requests.get(f'https://pricehistory.app/p/{code}')
+        soup = bs4.BeautifulSoup(response.text, 'html.parser')
+        #mrp = soup.find('table', {"class":"ph-table-offer"}).find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').text.strip()
+        price = soup.find('table', {"class":"ph-table-offer"}).find('td').text.strip()
+        lowest_price = soup.find('table', {"class":"ph-table-overview"}).find('td', {'class':'text-success'}).text.strip()
+        average_price = soup.find('table', {"class":"ph-table-overview"}).find('td', {'class':'text-primary'}).text.strip()
+        highest_price = soup.find('table', {"class":"ph-table-overview"}).find('td', {'class':'text-danger'}).text.strip()
+        name = soup.find('h1').text.strip()
+        price_int = int(re.sub('[^0-9]', '', price))
 
-    #mrp_int = int(re.sub('[^0-9]', '', mrp))
-    data = {}
-    data["name"] = name
-    data['prices'] = {}
-    data["prices"]["price"] = price_int
-    #data["prices"]["mrp"] = mrp_int
-    data["prices"]["highest_price"] = highest_price
-    data["prices"]["average_price"] = average_price
-    data["prices"]["lowest_price"] = lowest_price
-    
-    print("price_data--------", data)
-    return data
+        #mrp_int = int(re.sub('[^0-9]', '', mrp))
+        data = {}
+        data["name"] = name
+        data['prices'] = {}
+        data["prices"]["price"] = price_int
+        #data["prices"]["mrp"] = mrp_int
+        data["prices"]["highest_price"] = highest_price
+        data["prices"]["average_price"] = average_price
+        data["prices"]["lowest_price"] = lowest_price
+        
+        print("price_data--------", data)
+        return data
+    except:
+        return None
 
 #price_data("https://www.amazon.in/dp/B0B77D296W?tag=coa_in_g-21")
 
@@ -98,19 +102,21 @@ def actual_updater():
             link = f'https://www.amazon.in/dp/{i[1]}'
             print("link------", link)
             data = price_updater(link)
-            print (data['prices']['price'], "            ", i[4]) 
-            if str(data['prices']['price']) == str(i[4]):
-                print('same')
-            else:
-                print('update now')
-                SQLHandler.update_product_list_amazon(i[1], data['prices']['price'])
+            if data != None:
+                print (data['prices']['price'], "            ", i[4]) 
+                if str(data['prices']['price']) == str(i[4]):
+                    print('same')
+                else:
+                    print('update now')
+                    SQLHandler.update_product_list_amazon(i[1], data['prices']['price'])
         elif i[0] == 'Flipkart':
             print('flipkart')
             link = f'https://www.flipkart.com/{i[3]}/p/{i[2]}'
             data = price_updater(link)
-            if str(data['prices']['price']) == str(i[4]):
-                print('same')
-            else:
-                print('update now fk')
-                SQLHandler.update_product_list_flipkart(i[2], data['prices']['price']) 
+            if data != None:
+                if str(data['prices']['price']) == str(i[4]):
+                    print('same')
+                else:
+                    print('update now fk')
+                    SQLHandler.update_product_list_flipkart(i[2], data['prices']['price']) 
 actual_updater()
