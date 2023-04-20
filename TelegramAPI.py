@@ -6,7 +6,6 @@ from telegram.ext import ConversationHandler
 import LinkHandler as lh
 import ekaroLinkGen as eklg
 import time
-import pytest
 token = "6006418181:AAG6KR_5-GFdFmYmGqGyANrVDPgULmyXqbI"
 amzn_id_bot = ''
 pincode = ''
