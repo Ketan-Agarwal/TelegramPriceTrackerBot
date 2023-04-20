@@ -34,12 +34,8 @@ def wheregoes(link):
     try:
         main_link = main_link_element[0]['href']
         url = main_link
-        if url.startswith("https://www.amazon.in/dp"):
-            product_id = re.search(r'(?<=/dp/)([^/?]+)', url).group()
-            print(product_id)
-            return product_id
-        elif url.startswith("https://www.amazon.in/gp"):
-            product_id = re.search(r'(?<=/gp/)product/([^/?]+)', url).group()
+        if url.startswith("https://www.amazon.in/"):
+            product_id = re.search(r'(?<=p/)([^/?]+)', url).group()
             print(product_id)
             return product_id
         elif url.startswith("https://www.flipkart"):
@@ -50,6 +46,7 @@ def wheregoes(link):
             print(fkslug)
             return fkpid, fkslug
         else:
+            print("wheregoes unable")
             return None
     except IndexError as e:
         print(f"It is not an AMAZON link. ({e})")

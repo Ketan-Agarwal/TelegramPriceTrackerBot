@@ -5,7 +5,7 @@ def create_link(link):
     cookies = {
         'RID': '2689901',
         'customerType': 'new',
-        'pps_referance_cookie_e4adec0a3856cae8c9d623a3ee12d9ab': '7a4c24b1ebc9c0989bb54fa05b3f45e2%2C1687079517%2C1681896417%2C06e6f73f98768751333526f413ef64c2',
+        'pps_referance_cookie_e4adec0a3856cae8c9d623a3ee12d9ab': 'e9427c7da1771a3f904a051961a92fe4%2C1687195381%2C1682012281%2Ca67b0956620d2e2f35749bc23936c6f2',
         'jofedate': 'MDQvMjYvMjAyMyAwODozMToyOQ%3D%3D',
         'X-PPS-Status': 'signed',
     }
@@ -36,7 +36,12 @@ def create_link(link):
     }
 
     response = requests.post('https://earnkaro.com/create-earn-link', cookies=cookies, headers=headers, data=data)
+    print(response.content)
     soup = bs4.BeautifulSoup(response.text, 'html.parser')
-    shortlink = soup.find('input', {'id':'deallinkshorturl'})['value']
-    print(shortlink)
-    return shortlink
+    try:
+        shortlink = soup.find('input', {'id':'deallinkshorturl'})['value']
+        print(shortlink)
+        return shortlink
+    except TypeError as tperror:
+        print('Ekaro Link Not Generated. NoneType Error.')
+        return None
