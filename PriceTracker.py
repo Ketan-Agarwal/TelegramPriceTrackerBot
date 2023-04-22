@@ -89,7 +89,7 @@ def crawler(link):
         print(e)
 def price_updater(link):
     crawler(link)
-    time.sleep(2)
+    #time.sleep(2)
     return price_data(link)
 
 
