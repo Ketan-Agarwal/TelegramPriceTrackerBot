@@ -4,7 +4,7 @@ from SQLHandler import *
 from PriceTracker import *
 from telegram.ext import ConversationHandler
 import LinkHandler as lh
-import ekaroLinkGen as eklg
+#import ekaroLinkGen as eklg
 import time
 token = "6006418181:AAG6KR_5-GFdFmYmGqGyANrVDPgULmyXqbI"
 amzn_id_bot = ''
@@ -63,7 +63,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 await context.bot.send_message(chat_id=update.effective_chat.id, text="Please input your valid 6 digit pincode.")
         elif update.message.reply_to_message.message_id == desired_price.message_id:
             context.user_data['desired_price'] = update.message.text
-            add_product_sql(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('desired_price'), price_data1['prices']['price'], price_data1["prices"]["highest_price"], price_data1["prices"]["average_price"], price_data1["prices"]["lowest_price"], price_data1['name'], context.user_data.get('website'), context.user_data.get('fkpid'), context.user_data.get('fkslug'), context.user_data.get('eklg_link'))
+            add_product_sql(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('desired_price'), price_data1['prices']['price'], price_data1["prices"]["highest_price"], price_data1["prices"]["average_price"], price_data1["prices"]["lowest_price"], price_data1['name'], context.user_data.get('website'), context.user_data.get('fkpid'), context.user_data.get('fkslug'))
             await context.bot.send_message(chat_id=update.effective_chat.id,text=f"We will send you notification when your product price will fall below your Desired price.")
             await main_menu(update, context)
 
@@ -113,14 +113,7 @@ async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Amazon](https://www.amazon.in/dp/{context.user_data.get('pid')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
             elif context.user_data.get('website') == 'Flipkart':
                 context.user_data['fklink'] = f"https://www.flipkart.com/{context.user_data.get('fkslug')}/p/{context.user_data.get('fkpid')}"
-                eklg_link = eklg.create_link(context.user_data.get('link'))
-                if eklg_link != None:
-                    context.user_data['eklg_link'] = eklg_link
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Flipkart]({context.user_data.get('eklg_link')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
-                
-                else:
-                    context.user_data['eklg_link'] = None
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Flipkart]({context.user_data.get('fklink')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{price_data1['name']}\n\nCurrent Price: *₹{price_data1['prices']['price']}*\n\n[Show on Flipkart]({context.user_data.get('fklink')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
             pincode = await context.bot.send_message(chat_id=update.effective_chat.id, text="Your Pincode? (for product availability check) (in reply to this message)")
         else:
             await context.bot.send_message(chat_id=update.effective_chat.id, text="Hmmm\nI was not able to find any product for the given link. Please recheck the link.")
