@@ -61,12 +61,12 @@ def is_product_present(user_id, pid, fkpid):
   else:
     return result
 #print(is_product_present(5204718144, 4564564564)[0][2])
-def add_product_sql(id, pid, dprice,curr, high, avg, low, name, website, fkpid, fkslug, eklg_link):
+def add_product_sql(id, pid, dprice,curr, high, avg, low, name, website, fkpid, fkslug):
   cursor = mydb.cursor()
   #query = "INSERT INTO products(AmazonProductID) VALUES (%s); INSERT INTO users_products (UserID, ProductID) VALUES ((select UserID from users WHERE TelegramID = %s), (select ProductID from products WHERE AmazonProductID = %s), %s);"
-  query1 = "INSERT INTO products(AmazonProductID, current_price, lowest_price, highest_price, average_price, product_name, website, fkpid, fkslug, enkaro_link) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+  query1 = "INSERT INTO products(AmazonProductID, current_price, lowest_price, highest_price, average_price, product_name, website, fkpid, fkslug) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"
   query2 = "INSERT INTO users_products (UserID, ProductID, DesiredPrice) VALUES ((select UserID from users WHERE TelegramID = %s), (select ProductID from products WHERE AmazonProductID = %s or fkpid = %s), %s);"
-  values1 = (pid, curr, low, high, avg, name, website, fkpid, fkslug, eklg_link)
+  values1 = (pid, curr, low, high, avg, name, website, fkpid, fkslug)
   values2 = (id, pid, fkpid, dprice)
   cursor.execute(query1, values1)
   cursor.execute(query2, values2)
@@ -75,7 +75,7 @@ def add_product_sql(id, pid, dprice,curr, high, avg, low, name, website, fkpid, 
   
 def watchlist(id):
   cursor = mydb.cursor(buffered=True)
-  query = "SELECT products.AmazonProductID, products.fkpid, products.fkslug, products.website , products.product_name, users_products.DesiredPrice, products.current_price, products.enkaro_link FROM products INNER JOIN users_products ON products.ProductID = users_products.ProductID INNER JOIN users ON users_products.UserID = users.UserID WHERE users.TelegramID = %s;"
+  query = "SELECT products.AmazonProductID, products.fkpid, products.fkslug, products.website , products.product_name, users_products.DesiredPrice, products.current_price FROM products INNER JOIN users_products ON products.ProductID = users_products.ProductID INNER JOIN users ON users_products.UserID = users.UserID WHERE users.TelegramID = %s;"
   values = (id)
   cursor.execute(query,(values,))
   rows = cursor.fetchall()
@@ -85,14 +85,11 @@ def watchlist(id):
   print("hello")
   if rows != []:
     for i, row in enumerate(rows):
-      amazonpid, fkid, fkslugg, site, pname, dprice, currprice, enkaro_link = row
+      amazonpid, fkid, fkslugg, site, pname, dprice, currprice = row
       if site == 'Amazon':
         result_str += f"{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}     [Show on Amazon](https://www.amazon.in/dp/{amazonpid})\n\n"
       elif site == 'Flipkart':
-        if enkaro_link != None:
-          result_str += f"{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}    [Show On Flipkart]({enkaro_link})\n\n"
-        else:
-          result_str += f"{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}    [Show On Flipkart](https://www.flipkart.com/{fkslugg}/p/{fkid})\n\n"
+        result_str += f"{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}    [Show On Flipkart](https://www.flipkart.com/{fkslugg}/p/{fkid})\n\n"
     print("--------", result_str, "-----------")
     return result_str
   else:
