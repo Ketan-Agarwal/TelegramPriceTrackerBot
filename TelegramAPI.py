@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from telegram.ext import *
 from telegram import *
 from SQLHandler import *
