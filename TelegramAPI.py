@@ -5,6 +5,7 @@ from SQLHandler import *
 from PriceTracker import *
 from telegram.ext import ConversationHandler
 import LinkHandler as lh
+import threading
 #import ekaroLinkGen as eklg
 import time
 token = "6006418181:AAG6KR_5-GFdFmYmGqGyANrVDPgULmyXqbI"
@@ -34,6 +35,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if update.message.reply_to_message.message_id == amzn_id_bot.message_id:
             link = lh.message_link_extractor(update.message.text)
             if link != None:
+                context.user_data['waiting_text'] = await context.bot.send_message(update.effective_chat.id, "Please wait while I get product details for you.")
                 context.user_data['link'] = link
                 direct = lh.LinkDirector(link)
                 print(direct)
@@ -99,14 +101,20 @@ async def show_watchlist(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global pincode, desired_price, price_data1
-    message = await context.bot.send_message(chat_id=update.effective_chat.id, text='5')
-    for i in range(4, 0, -1):
+    message = await context.bot.send_message(chat_id=update.effective_chat.id, text='10')
+    def price_data11():
+        global price_data1
+        print(context.user_data['link'])
+        price_data1 = crawler(context.user_data.get('link'))[0]
+    t = threading.Thread(target=price_data11)
+    t.start()
+    for i in range(9, 0, -1):
         time.sleep(1)
         await context.bot.edit_message_text(chat_id=message.chat_id, message_id=message.message_id, text=str(i))
+    await context.bot.delete_message(chat_id=message.chat_id, message_id=context.user_data['waiting_text'].message_id)
     await context.bot.delete_message(chat_id=message.chat_id, message_id=message.message_id)
     if is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid')) == False:
     
-        price_data1 = price_data(context.user_data.get('link'))
         print("Price Data------", price_data1)
         if price_data1 != None:
             if context.user_data.get('website') == 'Amazon':

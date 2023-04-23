@@ -88,9 +88,9 @@ def watchlist(id):
     for i, row in enumerate(rows):
       amazonpid, fkid, fkslugg, site, pname, dprice, currprice = row
       if site == 'Amazon':
-        result_str += f"{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}     [Show on Amazon](https://www.amazon.in/dp/{amazonpid})\n\n"
+        result_str += f"------------------------------\n{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}     [Show on Amazon](https://www.amazon.in/dp/{amazonpid})\n\n"
       elif site == 'Flipkart':
-        result_str += f"{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}    [Show On Flipkart](https://www.flipkart.com/{fkslugg}/p/{fkid})\n\n"
+        result_str += f"------------------------------\n{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}    [Show On Flipkart](https://www.flipkart.com/{fkslugg}/p/{fkid})\n\n"
     print("--------", result_str, "-----------")
     return result_str
   else:
@@ -98,24 +98,24 @@ def watchlist(id):
 #https://www.flipkart.com/{fkslugg}/p/{fkid}  
 def get_product_list():
   cursor = mydb.cursor(buffered=True)
-  query = "SELECT products.website, products.AmazonProductID, products.fkpid, products.fkslug, products.current_price FROM products"
+  query = "SELECT products.website, products.AmazonProductID, products.fkpid, products.fkslug, products.current_price, products.lowest_price, products.highest_price, products.average_price FROM products"
   cursor.execute(query)
   rows = cursor.fetchall()
   cursor.close()
   return rows
 
-def update_product_list_amazon(pid, curr_price):
+def update_product_list_amazon(pid, curr_price, low, high, avg):
   cursor = mydb.cursor(buffered=True)
-  query = "UPDATE products SET current_price = %s WHERE AmazonProductID = %s"
-  values = (curr_price, pid)
+  query = "UPDATE products SET current_price = %s, lowest_price = %s, highest_price = %s, average_price = %s WHERE AmazonProductID = %s"
+  values = (curr_price, low, high, avg, pid)
   cursor.execute(query, values)
   cursor.close()
   mydb.commit()
   
-def update_product_list_flipkart(fkpid, curr_price):
+def update_product_list_flipkart(fkpid, curr_price, low, high, avg):
   cursor = mydb.cursor(buffered=True)
-  query = "UPDATE products SET current_price = %s WHERE fkpid = %s"
-  values = (curr_price, fkpid)
+  query = "UPDATE products SET current_price = %s, lowest_price = %s, highest_price = %s, average_price = %s WHERE fkpid = %s"
+  values = (curr_price, fkpid, low, high, avg)
   cursor.execute(query, values)
   cursor.close()
   mydb.commit()

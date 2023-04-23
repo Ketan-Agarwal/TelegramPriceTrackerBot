@@ -2,6 +2,12 @@
 import requests
 import re
 from bs4 import BeautifulSoup
+def get_tok():
+    tok = requests.get('https://www.wheregoes.com')
+    token = re.search(r'(?<=\")[a-zA-Z0-9=]+(?=\" style=\"display:none;)', str(tok.text)).group()
+    print(f"wheregoes token ----{token}")
+    return token
+
 def wheregoes(link):
     headers = {
         'authority': 'wheregoes.com',
@@ -26,7 +32,7 @@ def wheregoes(link):
         'url': str(link),
         'ua': 'Wheregoes.com Redirect Checker/1.0',
         'phn': '',
-        'php': '20V2hlcmVHb2VzIGhvbmV5cG90IDIwMjMtMDQtMjA==',
+        'php': get_tok(),
     }
 
     response = requests.post('https://wheregoes.com/trace/', headers=headers, data=data)
@@ -49,8 +55,8 @@ def wheregoes(link):
         else:
             print("wheregoes unable")
             return None
-    except IndexError as e:
-        print(f"It is not an AMAZON link. ({e})")
+    except:
+        print(f"It is not an AMAZON link.")
         return None
 
 def message_link_extractor(message):
