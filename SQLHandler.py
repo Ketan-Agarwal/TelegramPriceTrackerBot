@@ -130,14 +130,18 @@ def watcher():
   new_rows = cur.fetchall()
 
   # Check if any rows have been added or updated
-  if new_rows != rows:
-      print('Data has changed:')
-      for row in new_rows:
-        if row not in rows:
-          rows = new_rows
-          return True, row
+  if len(new_rows) == rows:
+    if new_rows != rows:
+        print('Data has changed:')
+        for row in new_rows:
+          if row not in rows:
+            rows = new_rows
+            return True, row
+    else:
+      print("not changed")
   else:
-    print("not changed")
+    rows = new_rows
+    print('new entry added')
 
   mydb.commit()
   cur.close()
