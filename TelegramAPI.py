@@ -99,19 +99,18 @@ async def show_watchlist(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Current I am tracking no products for you.\nClick Back to add products to your tracklist.", reply_markup=reply)
 
 async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    message = await context.bot.send_message(chat_id=update.effective_chat.id, text='10')
-    def price_data11():
-        print(context.user_data['link'])
-        context.user_data['price_data1'] = crawler(context.user_data.get('link'))[0]
-    t = threading.Thread(target=price_data11)
-    t.start()
-    for i in range(9, 0, -1):
-        time.sleep(1)
-        await context.bot.edit_message_text(chat_id=message.chat_id, message_id=message.message_id, text=str(i))
-    await context.bot.delete_message(chat_id=message.chat_id, message_id=context.user_data['waiting_text'].message_id)
-    await context.bot.delete_message(chat_id=message.chat_id, message_id=message.message_id)
     if is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid')) == False:
-    
+        message = await context.bot.send_message(chat_id=update.effective_chat.id, text='10')
+        def price_data11():
+            print(context.user_data['link'])
+            context.user_data['price_data1'] = crawler(context.user_data.get('link'))[0]
+        t = threading.Thread(target=price_data11)
+        t.start()
+        for i in range(9, 0, -1):
+            time.sleep(1)
+            await context.bot.edit_message_text(chat_id=message.chat_id, message_id=message.message_id, text=str(i))
+        await context.bot.delete_message(chat_id=message.chat_id, message_id=context.user_data['waiting_text'].message_id)
+        await context.bot.delete_message(chat_id=message.chat_id, message_id=message.message_id)
         print("Price Data------", context.user_data.get('price_data1'))
         if context.user_data.get('price_data1') != None:
             if context.user_data.get('website') == 'Amazon':
@@ -124,6 +123,7 @@ async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         else:
             await context.bot.send_message(chat_id=update.effective_chat.id, text="Hmmm\nI was not able to find any product for the given link. Please recheck the link.")
     else:
+        await context.bot.delete_message(chat_id=message.chat_id, message_id=context.user_data['waiting_text'].message_id)
         await context.bot.send_message(chat_id=update.effective_chat.id, text=f"I am already tracking your product. I will send you the alert when your product will fall below your Desired price of {is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid'))[0][2]}")
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
