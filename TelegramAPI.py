@@ -8,8 +8,8 @@ import threading
 import asyncio
 #import ekaroLinkGen as eklg
 import time
-#token = "6006418181:AAG6KR_5-GFdFmYmGqGyANrVDPgULmyXqbI"
-token = "6072951807:AAEO1-qSDieDVwLUY0t4JWqaM3DpVm0Z7_s" #token of main bot (APT)
+token = "6006418181:AAG6KR_5-GFdFmYmGqGyANrVDPgULmyXqbI"
+#token = "6072951807:AAEO1-qSDieDVwLUY0t4JWqaM3DpVm0Z7_s" #token of main bot (APT)
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
