@@ -4,7 +4,7 @@ import bs4
 import re
 import SQLHandler
 import threading
-import pytest
+import time
 def get_token(code):
     response = requests.get(f'https://pricehistory.app/p/{code}')
     soup = bs4.BeautifulSoup(response.text, 'html.parser')
@@ -143,7 +143,10 @@ def actual_updater():
                 return True
             else:
                 print('data is none')
+                
+def threader():
+    actual_updater()
+    time.sleep(500)
 thread = threading.Thread(target=actual_updater)
-#thread.start()
+thread.start()
 #print(price_data("https://www.amazon.in/dp/B09TFYPMHF"))
-crawler("https://www.flipkart.com/glen-sa-3040-egg-cooker/p/itm8ddf4b028ce6a?pid=EGGGMVHNM2HCQGPC&lid=LSTEGGGMVHNM2HCQGPCLGI8HE&marketplace=FLIPKART&affid=admitad&affExtParam1=2008103")

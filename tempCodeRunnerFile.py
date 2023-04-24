@@ -1,0 +1,1 @@
+SELECT UserID FROM users INNER JOIN users ON users_products.UserID = users.UserID INNER JOIN users_products ON products.ProductID = users_products.ProductID WHERE products.ProductID = %s;
