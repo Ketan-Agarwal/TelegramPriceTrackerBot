@@ -20,7 +20,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.answer()
     if query.data == "add_product":
         await query.delete_message()
-        amzn_id_bot = await context.bot.send_message(chat_id=update.effective_chat.id, text="Please reply me any product link from Amazon or Flipkart\n(⚠️ Only in reply to this message)")
+        amzn_id_bot = await context.bot.send_message(chat_id=update.effective_chat.id, text="REPLY me any product link from Amazon or Flipkart\n(⚠️ Only in reply to this message)")
     elif query.data == "show_watchlist":
         await query.delete_message()
         await show_watchlist(update, context)
@@ -60,7 +60,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 context.user_data['pincode'] = update.message.text
 
                 #await context.bot.send_message(update.effective_chat.id, "Thanks For the info.")
-                desired_price = await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Please input your desired price at which you want to be notified.\nCurrent Price: {price_data1['prices']['price']}\n(in reply to this message)")
+                desired_price = await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Input your desired price at which you want to be notified.\nCurrent Price: {price_data1['prices']['price']}\n(in reply to this message)")
                 add_pincode(context.user_data.get('uid'), context.user_data.get('pincode'))
                 print(context.user_data.get('pincode'))
             else:
@@ -139,7 +139,7 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         [InlineKeyboardButton("Get Help!", callback_data="help")],
     ]    
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Please select an option from below.", reply_markup=reply_markup)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Select an option from below.", reply_markup=reply_markup)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data['uid'] = update.message.from_user.id
     context.user_data['website'] = None
