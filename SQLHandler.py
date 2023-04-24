@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import mysql.connector
-
+#import mysql.connector
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -8,6 +8,7 @@ mydb = mysql.connector.connect(
   password="admin@mysql",
   database="user_data"
 )
+
 
 def add_user(id, FirstName, LastName, isPremium):
   cursor = mydb.cursor(buffered=True)
@@ -119,4 +120,49 @@ def update_product_list_flipkart(fkpid, curr_price, low, high, avg):
   cursor.execute(query, values)
   cursor.close()
   mydb.commit()
-    
+  
+def watcher():
+  #while True:
+  global rows
+  cur = mydb.cursor()
+  cur.execute('SELECT * FROM products')
+
+  new_rows = cur.fetchall()
+
+  # Check if any rows have been added or updated
+  if new_rows != rows:
+      print('Data has changed:')
+      for row in new_rows:
+        if row not in rows:
+          rows = new_rows
+          return True, row
+  else:
+    print("not changed")
+
+  mydb.commit()
+  cur.close()
+  #time.sleep(10)
+
+def watching():
+  mydb1 = mysql.connector.connect(
+  host="localhost",
+  user="admin",
+  password="admin@mysql",
+  database="user_data"
+)
+  global rows
+  cursor = mydb1.cursor(buffered=True)
+  cursor.execute('SELECT * FROM products')
+  rows = cursor.fetchall()
+
+  print(rows)
+  mydb1.commit()
+  cursor.close()
+
+def get_users_for_product(pid):
+  cursor = mydb.cursor()
+  query = "SELECT u.TelegramID, up.DesiredPrice FROM users u INNER JOIN users_products up ON u.UserID = up.UserID INNER JOIN products p ON up.ProductID = p.ProductID WHERE p.ProductID = %s;"
+  cursor.execute(query, (pid, ))
+  rows = cursor.fetchall()
+  print(rows)
+  return rows

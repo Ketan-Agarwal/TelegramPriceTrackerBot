@@ -3,12 +3,13 @@ from telegram.ext import *
 from telegram import *
 from SQLHandler import *
 from PriceTracker import *
-from telegram.ext import ConversationHandler
 import LinkHandler as lh
 import threading
+import asyncio
 #import ekaroLinkGen as eklg
 import time
-token = "6006418181:AAG6KR_5-GFdFmYmGqGyANrVDPgULmyXqbI"
+#token = "6006418181:AAG6KR_5-GFdFmYmGqGyANrVDPgULmyXqbI"
+token = "6072951807:AAEO1-qSDieDVwLUY0t4JWqaM3DpVm0Z7_s" #token of main bot (APT)
 amzn_id_bot = ''
 pincode = ''
 desired_price = ''
@@ -19,7 +20,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.answer()
     if query.data == "add_product":
         await query.delete_message()
-        amzn_id_bot = await context.bot.send_message(chat_id=update.effective_chat.id, text="Please Send me any product link from Amazon | Flipkart (in reply to this message)")
+        amzn_id_bot = await context.bot.send_message(chat_id=update.effective_chat.id, text="Please reply me any product link from Amazon or Flipkart\n(⚠️ Only in reply to this message)")
     elif query.data == "show_watchlist":
         await query.delete_message()
         await show_watchlist(update, context)
@@ -51,14 +52,14 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     await add_product(update, context)
                 elif direct == None:
                     context.user_data['pid'] = None
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text="The link you sent doesn't seems to be associated with any particular product. Please Copy and paste actual product link.")
+                    await context.bot.send_message(chat_id=update.effective_chat.id, text="❗The link you sent doesn't seems to be associated with any particular product. Please Copy and reply me actual product link.")
             else:
-                await context.bot.send_message(chat_id=update.effective_chat.id, text="There is no product link in your message.\nPlease send me a amazon or flipkart product link.")
+                await context.bot.send_message(chat_id=update.effective_chat.id, text="There is no product link in your message.\nPlease reply me an amazon or flipkart product link.")
         elif update.message.reply_to_message.message_id == pincode.message_id:
             if len(update.message.text) == 6 and update.message.text.isnumeric():
                 context.user_data['pincode'] = update.message.text
 
-                await context.bot.send_message(update.effective_chat.id, "Thanks For the info.")
+                #await context.bot.send_message(update.effective_chat.id, "Thanks For the info.")
                 desired_price = await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Please input your desired price at which you want to be notified.\nCurrent Price: {price_data1['prices']['price']}\n(in reply to this message)")
                 add_pincode(context.user_data.get('uid'), context.user_data.get('pincode'))
                 print(context.user_data.get('pincode'))
@@ -127,18 +128,18 @@ async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         else:
             await context.bot.send_message(chat_id=update.effective_chat.id, text="Hmmm\nI was not able to find any product for the given link. Please recheck the link.")
     else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"We are already tracking your product. We will send you the alert when your product will fall below your Desired price of {is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid'))[0][2]}")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"I am already tracking your product. We will send you the alert when your product will fall below your Desired price of {is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid'))[0][2]}")
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
         [
             InlineKeyboardButton("Add A Product", callback_data="add_product"),
-            InlineKeyboardButton("Show TrackList", callback_data="show_watchlist"),
+            InlineKeyboardButton("Show My TrackList", callback_data="show_watchlist"),
         ],
         [InlineKeyboardButton("Status", callback_data="help")],
     ]    
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Main Menu", reply_markup=reply_markup)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Please select an option from below.", reply_markup=reply_markup)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data['uid'] = update.message.from_user.id
     context.user_data['website'] = None
@@ -158,12 +159,48 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     else:
         add_user(context.user_data.get('uid'), update.message.from_user.first_name, update.message.from_user.last_name, update.message.from_user.is_premium)
-        await update.message.reply_text(f"Hello {update.message.from_user.first_name}, \nWelcome to one of the most accurate and responsive Bot for Price Tracking.")
+        await update.message.reply_text(f"Hello {update.message.from_user.first_name}, \n\nWelcome to one of the most accurate and responsive Bot for Price Tracking.\n\nYou can contact us here @B2B_Deals_Support_Bot")
         print(update.effective_chat.id)
         await main_menu(update, context)
 
+async def send_price(idss, curr_price, des_price, link, name) -> None:
+    global bot
+    print(f"being executed? ---- {idss}")
+    bot = Bot(token=token)
+    await bot.send_message(chat_id=idss, text=f"🚨 Price Alert 🚨 \n\nThe price of your product has changed!\n\nName: {name}\n\nCurrent Price: ₹{curr_price}\nDesired Price: ₹{des_price}\n\nLink: {link}\n\nJoin [B2BDeals](https://t.me/backtoback_deals) for DealBreaker Deals", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
+
+
+def datawatcher():
+    watching()
+    while True:
+        wat = watcher()
+        print(f"watcher------------{wat}")
+        if wat != None:
+            returning, data_row = wat
+            print(f"tg code ------------------------------ {data_row} -------- {returning}")
+            userIDss = get_users_for_product(data_row[0])
+            for userIDs in userIDss:
+                print(userIDs)
+                idss = userIDs[0]
+                print(idss)
+                current_price = data_row[2]
+                desired_price = userIDs[1]
+                #print(f"current_price -=------=-=-=-=-=---{}")
+                #print(f"desired_price---=-=-=--=--=-= {}")
+                name = data_row[6]
+                if data_row[7] == 'Amazon':
+                    link = f"[Open Amazon](https://www.amazon.in/dp/{data_row[1]})"
+                elif data_row[7] == 'Flipkart':
+                    link = f"[Open Flipkart](https://www.flipkart.com/{data_row[9]}/p/{data_row[8]})"
+                asyncio.run(send_price(idss, current_price, desired_price, link, name))
+        else:
+            print("Data Not changed")
+        time.sleep(1)
+
 if __name__ == '__main__':
-    
+    thread = threading.Thread(target=datawatcher)
+    thread.daemon = True
+    thread.start()
     application = ApplicationBuilder().token(token).build()
     start_handler = CommandHandler("start", start)
     application.add_handler(start_handler)
