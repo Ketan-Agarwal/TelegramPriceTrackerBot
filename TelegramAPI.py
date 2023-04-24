@@ -54,7 +54,7 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 context.user_data['pincode'] = update.message.text
 
                 #await context.bot.send_message(update.effective_chat.id, "Thanks For the info.")
-                context.user_data['desired_price_id'] = await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Input your desired price at which you want to be notified.\nCurrent Price: {context.user_data.get('price_data1')['prices']['price']}\n(in reply to this message)")
+                context.user_data['desired_price_id'] = await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Input your desired price at which you want to be notified.\nCurrent Price: {context.user_data.get('price_data1')['prices']['price']}\n(⚠️ ONLY in reply to this message)")
                 add_pincode(context.user_data.get('uid'), context.user_data.get('pincode'))
                 print(context.user_data.get('pincode'))
             else:
@@ -120,7 +120,7 @@ async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             elif context.user_data.get('website') == 'Flipkart':
                 context.user_data['fklink'] = f"https://www.flipkart.com/{context.user_data.get('fkslug')}/p/{context.user_data.get('fkpid')}"
                 await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{context.user_data.get('price_data1')['name']}\n\nCurrent Price: *₹{context.user_data.get('price_data1')['prices']['price']}*\n\n[Show on Flipkart]({context.user_data.get('fklink')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
-            context.user_data['act_pincode'] = await context.bot.send_message(chat_id=update.effective_chat.id, text="Your Pincode? (for product availability check) (in reply to this message)")
+            context.user_data['act_pincode'] = await context.bot.send_message(chat_id=update.effective_chat.id, text="Your Pincode? (for product availability check) \n(⚠️ ONLY in reply to this message)")
         else:
             await context.bot.send_message(chat_id=update.effective_chat.id, text="Hmmm\nI was not able to find any product for the given link. Please recheck the link.")
     else:
