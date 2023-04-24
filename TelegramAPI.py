@@ -85,7 +85,7 @@ async def help1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         [InlineKeyboardButton("Back", callback_data="back")],
     ]
     reply = InlineKeyboardMarkup(back)
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Hello, \nCurrently you can only add products, will will be including more features in upcoming days.", reply_markup=reply)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Hello, \nDrop a message on @B2B_Deals_Support_Bot if you have any type of questions.", reply_markup=reply)
 
 async def show_watchlist(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     back = [
@@ -128,7 +128,7 @@ async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         else:
             await context.bot.send_message(chat_id=update.effective_chat.id, text="Hmmm\nI was not able to find any product for the given link. Please recheck the link.")
     else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"I am already tracking your product. We will send you the alert when your product will fall below your Desired price of {is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid'))[0][2]}")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"I am already tracking your product. I will send you the alert when your product will fall below your Desired price of {is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid'))[0][2]}")
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
@@ -136,7 +136,7 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             InlineKeyboardButton("Add A Product", callback_data="add_product"),
             InlineKeyboardButton("Show My TrackList", callback_data="show_watchlist"),
         ],
-        [InlineKeyboardButton("Status", callback_data="help")],
+        [InlineKeyboardButton("Get Help!", callback_data="help")],
     ]    
     reply_markup = InlineKeyboardMarkup(keyboard)
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Please select an option from below.", reply_markup=reply_markup)
