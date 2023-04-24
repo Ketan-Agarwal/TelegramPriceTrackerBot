@@ -66,7 +66,7 @@ def is_product_present(user_id, pid, fkpid):
 def add_product_sql(id, pid, dprice,curr, high, avg, low, name, website, fkpid, fkslug):
   cursor = mydb.cursor()
   #query = "INSERT INTO products(AmazonProductID) VALUES (%s); INSERT INTO users_products (UserID, ProductID) VALUES ((select UserID from users WHERE TelegramID = %s), (select ProductID from products WHERE AmazonProductID = %s), %s);"
-  query1 = "INSERT INTO products(AmazonProductID, current_price, lowest_price, highest_price, average_price, product_name, website, fkpid, fkslug) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"
+  query1 = "INSERT INTO products(AmazonProductID, current_price, lowest_price, highest_price, average_price, product_name, website, fkpid, fkslug, time_registered) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, (select unix_timestamp()));"
   query2 = "INSERT INTO users_products (UserID, ProductID, DesiredPrice) VALUES ((select UserID from users WHERE TelegramID = %s), (select ProductID from products WHERE AmazonProductID = %s or fkpid = %s), %s);"
   values1 = (pid, curr, low, high, avg, name, website, fkpid, fkslug)
   values2 = (id, pid, fkpid, dprice)
@@ -125,7 +125,7 @@ def watcher():
   #while True:
   global rows
   cur = mydb.cursor()
-  cur.execute('SELECT * FROM products')
+  cur.execute('SELECT * FROM products where time_registered < (select unix_timestamp() - 5)')
 
   new_rows = cur.fetchall()
 
