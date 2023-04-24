@@ -111,7 +111,7 @@ def actual_updater():
         print(i)
         if i[0] == 'Amazon':
             print('amazon')
-            link = f'https://www.amazon.in/dp/{i[1]}'
+            link = f'https://www.amazon.in/dp/{i[1]}?tag=b2bdeals-21'
             print("link------", link)
             data = price_updater(link)
             if data != None:

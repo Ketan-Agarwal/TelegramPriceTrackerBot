@@ -115,7 +115,7 @@ async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         if context.user_data.get('price_data1') != None:
             if context.user_data.get('website') == 'Amazon':
 
-                await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{context.user_data.get('price_data1')['name']}\n\nCurrent Price: *₹{context.user_data.get('price_data1')['prices']['price']}*\n\n[Show on Amazon](https://www.amazon.in/dp/{context.user_data.get('pid')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{context.user_data.get('price_data1')['name']}\n\nCurrent Price: *₹{context.user_data.get('price_data1')['prices']['price']}*\n\n[Show on Amazon](https://www.amazon.in/dp/{context.user_data.get('pid')}?tag=b2bdeals-21)", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
             elif context.user_data.get('website') == 'Flipkart':
                 context.user_data['fklink'] = f"https://www.flipkart.com/{context.user_data.get('fkslug')}/p/{context.user_data.get('fkpid')}"
                 await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Name:\n{context.user_data.get('price_data1')['name']}\n\nCurrent Price: *₹{context.user_data.get('price_data1')['prices']['price']}*\n\n[Show on Flipkart]({context.user_data.get('fklink')})", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)

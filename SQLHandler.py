@@ -89,7 +89,7 @@ def watchlist(id):
     for i, row in enumerate(rows):
       amazonpid, fkid, fkslugg, site, pname, dprice, currprice = row
       if site == 'Amazon':
-        result_str += f"------------------------------\n{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}     [Show on Amazon](https://www.amazon.in/dp/{amazonpid})\n\n"
+        result_str += f"------------------------------\n{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}     [Show on Amazon](https://www.amazon.in/dp/{amazonpid}?tag=b2bdeals-21)\n\n"
       elif site == 'Flipkart':
         result_str += f"------------------------------\n{i+1}. {pname}\n   Desired Price: {dprice}\n   Current Price: {currprice}    [Show On Flipkart](https://www.flipkart.com/{fkslugg}/p/{fkid})\n\n"
     print("--------", result_str, "-----------")
