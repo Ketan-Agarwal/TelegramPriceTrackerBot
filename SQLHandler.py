@@ -12,7 +12,7 @@ mydb = mysql.connector.connect(
 
 def add_user(id, FirstName, LastName, isPremium):
   cursor = mydb.cursor(buffered=True)
-  query = "INSERT INTO users(TelegramID, FirstName, LastName, isPremium, time_registered) VALUES (%s, %s, %s, %s, unix_timestamp())"
+  query = "INSERT INTO users(TelegramID, FirstName, LastName, isPremium, time_registered) VALUES (%s, %s, %s, %s, select unix_timestamp())"
   if isPremium == None:
     isPremium = False
   else:
