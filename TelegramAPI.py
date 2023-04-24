@@ -129,7 +129,7 @@ async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
         [
-            InlineKeyboardButton("Add A Product", callback_data="add_product"),
+            InlineKeyboardButton("Add A Product (Link)", callback_data="add_product"),
             InlineKeyboardButton("Show My TrackList", callback_data="show_watchlist"),
         ],
         [InlineKeyboardButton("Get Help!", callback_data="help")],
