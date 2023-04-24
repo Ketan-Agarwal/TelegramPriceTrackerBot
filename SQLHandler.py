@@ -8,7 +8,7 @@ mydb = mysql.connector.connect(
   password="admin@mysql",
   database="user_data"
 )
-
+d
 
 def add_user(id, FirstName, LastName, isPremium):
   cursor = mydb.cursor(buffered=True)
