@@ -123,7 +123,7 @@ async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         else:
             await context.bot.send_message(chat_id=update.effective_chat.id, text="Hmmm\nI was not able to find any product for the given link. Please recheck the link.")
     else:
-        await context.bot.delete_message(chat_id=message.chat_id, message_id=context.user_data['waiting_text'].message_id)
+        await context.bot.delete_message(chat_id=update.effective_chat.id, message_id=context.user_data['waiting_text'].message_id)
         await context.bot.send_message(chat_id=update.effective_chat.id, text=f"I am already tracking your product. I will send you the alert when your product will fall below your Desired price of {is_product_present(context.user_data.get('uid'), context.user_data.get('pid'), context.user_data.get('fkpid'))[0][2]}")
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
