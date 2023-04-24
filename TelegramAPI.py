@@ -98,7 +98,11 @@ async def show_watchlist(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if watchlist(context.user_data.get('uid')) != None:
         await context.bot.send_message(chat_id=update.effective_chat.id, text="The Products I am tracking for you are as follows:\n\n" + watchlist(context.user_data.get('uid')),reply_markup=reply, parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True, disable_notification=True)
     else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Current I am tracking no products for you.\nClick /start to add products to your tracklist.")
+        back = [
+            [InlineKeyboardButton("Back", callback_data="back")],
+        ]
+        reply = InlineKeyboardMarkup(back)
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Current I am tracking no products for you.\nClick Back to add products to your tracklist.", reply_markup=reply)
 
 async def add_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global pincode, desired_price, price_data1
