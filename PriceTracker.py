@@ -31,7 +31,7 @@ def price_data(link):
     }
 
     response = requests.post('https://pricehistory.app/api/search', headers=headers, json=json_data)
-    print("response.content--------", response.content)
+    #print("response.content--------", response.content)
     statuscode = response.status_code
     
     try:
@@ -66,8 +66,8 @@ def crawler(link):
     try:
         response = price_data(link)
         print(response)
-        print("crawler-----status_code--------",response[2])
-        print("crawler ---------code--------", response[1])
+        #print("crawler-----status_code--------",response[2])
+        #print("crawler ---------code--------", response[1])
         id = re.search(r'(?<=-)\w+(?=$)', str(response[1])).group()
         print("id-----------", id)
         headers = {
@@ -93,14 +93,14 @@ def crawler(link):
 
         response1 = requests.post(f'https://pricehistory.app/api/report/refresh/{id}', headers=headers, json=json_data)
         print("crawler------------", response1.content)
-        print(response)
+        #print(response)
         return response
     except Exception as e:
         print(e)
 def price_updater(link):
     crawler(link)
-    #time.sleep(2)
-    print(f"link--------{link}")
+    time.sleep(4)
+    #print(f"link--------{link}")
     try:
         return price_data(link)[0]
     except TypeError as e:
@@ -110,7 +110,7 @@ def actual_updater():
     for i in list:
         print(i)
         if i[0] == 'Amazon':
-            print('amazon')
+            #print('amazon')
             link = f'https://www.amazon.in/dp/{i[1]}?tag=b2bdeals-21'
             print("link------", link)
             data = price_updater(link)
@@ -119,25 +119,24 @@ def actual_updater():
                 low_price = data['prices']['lowest_price']
                 avg_price = data['prices']['average_price']
                 high_price = data['prices']['highest_price']
-                if data != None:
-                    print (price, "            ", i[4])
-                    if str(price) != str(i[4]) or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:
-                        SQLHandler.update_product_list_amazon(i[1], price, low_price, high_price, avg_price)
-                        print('updated')
-                    else:
-                        print('same')
-                    return True
-                
+                print (price, "      latest vs DB price      ", i[4])
+                if price != str(i[4]) or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:    #BUG price was not a string in DB
+                    SQLHandler.update_product_list_amazon(i[1], price, low_price, high_price, avg_price)
+                    print(i[4], '                       -------------------------- Current Price in DB, price got from crawler---------------', price)
+                    #print('updated')
+                else:
+                    print('same')
+                    return True 
             else:
                 print('data is none')
         elif i[0] == 'Flipkart':
-            print('flipkart')
+            #print('flipkart')
             link = f'https://www.flipkart.com/{i[3]}/p/{i[2]}'
             data = price_updater(link)
             if data != None:
                 if str(price) != str(i[4]) or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:
                     SQLHandler.update_product_list_flipkart(i[2], price, low_price, high_price, avg_price) 
-                    print('updated now fk')
+                    #print('updated now fk')
                 else:
                     print('same')
                 return True
@@ -145,8 +144,10 @@ def actual_updater():
                 print('data is none')
                 
 def threader():
+    print('actual updater')
     actual_updater()
     time.sleep(500)
-thread = threading.Thread(target=actual_updater)
+thread = threading.Thread(target=threader)
+#thread.daemon = True
 thread.start()
 #print(price_data("https://www.amazon.in/dp/B09TFYPMHF"))

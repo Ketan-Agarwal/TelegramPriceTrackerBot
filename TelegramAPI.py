@@ -82,15 +82,17 @@ async def help1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Hello, \nDrop a message on @B2B_Deals_Support_Bot if you have any type of questions.", reply_markup=reply)
 
 async def show_watchlist(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    print('----------------------1')
     back = [
         [InlineKeyboardButton("Back", callback_data="back")],
     ]
     reply = InlineKeyboardMarkup(back)
-    #tup = watchlist(context.user_data.get('uid'))
+    tup = watchlist(context.user_data.get('uid'))
     #for i, row in enumerate(tup):
     #    result_str += f"{i+1}. {row[0]} - {row[1]}\n   Desired Price: {row[2]}\n   Current Price: {row[3]}\n"
-    if watchlist(context.user_data.get('uid')) != None:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="The Products I am tracking for you are as follows:\n\n" + watchlist(context.user_data.get('uid')),reply_markup=reply, parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True, disable_notification=True)
+    print('----------------------2')
+    if tup != None:
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="The Products I am tracking for you are as follows:\n\n" + tup,reply_markup=reply, parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True, disable_notification=True)
     else:
         back = [
             [InlineKeyboardButton("Back", callback_data="back")],
@@ -159,11 +161,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         print(update.effective_chat.id)
         await main_menu(update, context)
 
-async def send_price(idss, curr_price, des_price, link, name) -> None:
+async def send_price(idss, prev_data,  curr_price, des_price, link, name) -> None:
     global bot
     print(f"being executed? ---- {idss}")
     bot = Bot(token=token)
-    await bot.send_message(chat_id=idss, text=f"🚨 Price Alert 🚨 \n\nThe price of your product has changed!\n\nName: {name}\n\nCurrent Price: ₹{curr_price}\nDesired Price: ₹{des_price}\n\nLink: {link}\n\nJoin [B2BDeals](https://t.me/backtoback_deals) for DealBreaker Deals", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
+    await bot.send_message(chat_id=idss, text=f"🚨 Price Alert 🚨 \n\nThe price of your product has changed!\n\nName: {name}\n\nCurrent Price: ₹{curr_price}\nPrevious Price: ₹{prev_data}\nDesired Price: ₹{des_price}\n\nLink: {link}\n\nJoin [B2BDeals](https://t.me/backtoback_deals) for DealBreaker Deals", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def datawatcher():
@@ -172,31 +174,32 @@ def datawatcher():
         wat = watcher()
         print(f"watcher------------{wat}")
         if wat != None:
-            returning, data_row = wat
+            returning, data_row, prev_data = wat
             print(f"tg code ------------------------------ {data_row} -------- {returning}")
             userIDss = get_users_for_product(data_row[0])
             for userIDs in userIDss:
                 print(userIDs)
                 idss = userIDs[0]
                 print(idss)
+                old_price = prev_data[2]
                 current_price = data_row[2]
                 desired_price = userIDs[1]
                 #print(f"current_price -=------=-=-=-=-=---{}")
                 #print(f"desired_price---=-=-=--=--=-= {}")
                 name = data_row[6]
                 if data_row[7] == 'Amazon':
-                    link = f"[Open Amazon](https://www.amazon.in/dp/{data_row[1]})"
+                    link = f"[Open Amazon](https://www.amazon.in/dp/{data_row[1]}?tag=b2bdeals-21)"
                 elif data_row[7] == 'Flipkart':
                     link = f"[Open Flipkart](https://www.flipkart.com/{data_row[9]}/p/{data_row[8]})"
-                asyncio.run(send_price(idss, current_price, desired_price, link, name))
+                asyncio.run(send_price(idss, old_price, current_price, desired_price, link, name))
         else:
             print("Data Not changed")
         time.sleep(1)
 
 if __name__ == '__main__':
-    thread = threading.Thread(target=datawatcher)
-    thread.daemon = True
-    thread.start()
+    threa = threading.Thread(target=datawatcher)
+    threa.daemon = True
+    threa.start()
     application = ApplicationBuilder().token(token).build()
     start_handler = CommandHandler("start", start)
     application.add_handler(start_handler)
