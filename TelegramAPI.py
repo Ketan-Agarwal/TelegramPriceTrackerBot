@@ -174,7 +174,7 @@ def datawatcher():
         wat = watcher()
         print(f"watcher------------{wat}")
         if wat != None:
-            returning, data_row, prev_data = wat
+            returning, data_row = wat
             print(f"tg code ------------------------------ {data_row} -------- {returning}")
             userIDss = get_users_for_product(data_row[0])
             for userIDs in userIDss:
