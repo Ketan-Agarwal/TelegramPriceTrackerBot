@@ -13,7 +13,7 @@ import mysql.connector.pooling
 
 # Define the database connection parameters
 config = {
-    'host': '192.168.0.101',
+    'host': 'localhost',
     'user': 'admin',
     'password': 'admin@mysql',
     'database': 'user_data'
