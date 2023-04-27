@@ -161,11 +161,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         print(update.effective_chat.id)
         await main_menu(update, context)
 
-async def send_price(idss, prev_data,  curr_price, des_price, link, name) -> None:
+async def send_price(idss, curr_price, des_price, link, name) -> None:
     global bot
     print(f"being executed? ---- {idss}")
     bot = Bot(token=token)
-    await bot.send_message(chat_id=idss, text=f"🚨 Price Alert 🚨 \n\nThe price of your product has changed!\n\nName: {name}\n\nCurrent Price: ₹{curr_price}\nPrevious Price: ₹{prev_data}\nDesired Price: ₹{des_price}\n\nLink: {link}\n\nJoin [B2BDeals](https://t.me/backtoback_deals) for DealBreaker Deals", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
+    await bot.send_message(chat_id=idss, text=f"🚨 Price Alert 🚨 \n\nThe price of your product has changed!\n\nName: {name}\n\nCurrent Price: ₹{curr_price}\nDesired Price: ₹{des_price}\n\nLink: {link}\n\nJoin [B2BDeals](https://t.me/backtoback_deals) for DealBreaker Deals", parse_mode=constants.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def datawatcher():
@@ -181,7 +181,6 @@ def datawatcher():
                 print(userIDs)
                 idss = userIDs[0]
                 print(idss)
-                old_price = prev_data[2]
                 current_price = data_row[2]
                 desired_price = userIDs[1]
                 #print(f"current_price -=------=-=-=-=-=---{}")
@@ -191,7 +190,7 @@ def datawatcher():
                     link = f"[Open Amazon](https://www.amazon.in/dp/{data_row[1]}?tag=b2bdeals-21)"
                 elif data_row[7] == 'Flipkart':
                     link = f"[Open Flipkart](https://www.flipkart.com/{data_row[9]}/p/{data_row[8]})"
-                asyncio.run(send_price(idss, old_price, current_price, desired_price, link, name))
+                asyncio.run(send_price(idss, current_price, desired_price, link, name))
         else:
             print("Data Not changed")
         time.sleep(1)

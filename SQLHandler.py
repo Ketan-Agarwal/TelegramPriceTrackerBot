@@ -167,9 +167,8 @@ def watcher():
         print('Data has changed:')
         for row in new_rows:
           if row not in rows:
-            previous_rows = rows.copy()
             rows = new_rows
-            return True, row, previous_rows
+            return True, row
     else:
       print("not changed")
   else:
@@ -180,6 +179,7 @@ def watcher():
   cur.close()
   mydb.close()
   #time.sleep(10)
+
 
 def watching():
   mydb1 = pool.get_connection()
