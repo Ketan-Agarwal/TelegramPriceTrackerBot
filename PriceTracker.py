@@ -144,9 +144,10 @@ def actual_updater():
                 print('data is none')
                 
 def threader():
-    print('actual updater')
-    actual_updater()
-    time.sleep(500)
+    while True:
+        print('actual updater')
+        actual_updater()
+        time.sleep(100)
 thread = threading.Thread(target=threader)
 #thread.daemon = True
 thread.start()
