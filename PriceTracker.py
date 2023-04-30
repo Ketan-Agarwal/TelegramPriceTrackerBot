@@ -5,6 +5,15 @@ import re
 import SQLHandler
 import threading
 import time
+import logging
+
+logger = logging.getLogger('error_logger')
+logger.setLevel(logging.INFO)
+error_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+error_file_handler = logging.FileHandler('/var/log/pricetracker_info_crawler.log')
+error_file_handler.setFormatter(error_formatter)
+logger.addHandler(error_file_handler)
+
 def get_token(code):
     response = requests.get(f'https://pricehistory.app/p/{code}')
     soup = bs4.BeautifulSoup(response.text, 'html.parser')
@@ -93,6 +102,7 @@ def crawler(link):
 
         response1 = requests.post(f'https://pricehistory.app/api/report/refresh/{id}', headers=headers, json=json_data)
         print("crawler------------", response1.content)
+        logger.info(response1.content)
         #print(response)
         return response
     except Exception as e:
