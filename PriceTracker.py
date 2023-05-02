@@ -162,7 +162,8 @@ def actual_updater():
                         logger_update.error(f'Wasn\'t able to update database. ProductID: {i[2]}, Product Slug: {i[3]}')
                     #print('updated now fk')
                 else:
-                    print('same')
+                    logger_update.info('data seems same')
+                    logger_update.info(f'DATA ----- {data} \n\n Data from DB: {i}')
                 return True
             else:
                 logger_update.error(f'data is none, website--- {i[0]}')
