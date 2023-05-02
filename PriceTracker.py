@@ -149,9 +149,9 @@ def actual_updater():
                     print('same')
                     return True 
             else:
-                print('data is none')
+                logger_update.error(f'data is none, website--- {i[0]}')
         elif i[0] == 'Flipkart':
-            #print('flipkart')
+            logger_update.info('reached flipkart elif')
             link = f'https://www.flipkart.com/{i[3]}/p/{i[2]}'
             data = price_updater(link)
             if data != None:
@@ -165,7 +165,7 @@ def actual_updater():
                     print('same')
                 return True
             else:
-                print('data is none')
+                logger_update.error(f'data is none, website--- {i[0]}')
                 
 def threader():
     while True:
@@ -175,4 +175,4 @@ def threader():
 thread = threading.Thread(target=threader)
 #thread.daemon = True
 thread.start()
-#print(price_data("https://www.amazon.in/dp/B09TFYPMHF"))
+print(price_data("https://www.flipkart.com/"))
