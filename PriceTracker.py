@@ -14,6 +14,13 @@ error_file_handler = logging.FileHandler('/var/log/pricetracker_info_crawler.log
 error_file_handler.setFormatter(error_formatter)
 logger.addHandler(error_file_handler)
 
+
+logger_update = logging.getLogger('info_logger')
+logger_update.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler('/var/log/pricetracker_info_updater.log')
+file_handler.setFormatter(error_formatter)
+logger_update.addHandler(file_handler)
+
 def get_token(code):
     response = requests.get(f'https://pricehistory.app/p/{code}')
     soup = bs4.BeautifulSoup(response.text, 'html.parser')
@@ -131,9 +138,13 @@ def actual_updater():
                 high_price = data['prices']['highest_price']
                 print (price, "      latest vs DB price      ", i[4])
                 if price != str(i[4]) or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:    #BUG price was not a string in DB
-                    SQLHandler.update_product_list_amazon(i[1], price, low_price, high_price, avg_price)
-                    print(i[4], '                       -------------------------- Current Price in DB, price got from crawler---------------', price)
-                    #print('updated')
+                    try:
+                        SQLHandler.update_product_list_amazon(i[1], price, low_price, high_price, avg_price)
+                        logger_update.info(f'Current Price in DB was {i[4]} and the price got from crawler is {price}')
+                        print(i[4], '                       -------------------------- Current Price in DB, price got from crawler---------------', price)
+                        #print('updated')
+                    except:
+                        logger_update.error(f'Wasn\'t able to update database. -- ProductID: {i[1]}')
                 else:
                     print('same')
                     return True 
@@ -145,7 +156,10 @@ def actual_updater():
             data = price_updater(link)
             if data != None:
                 if str(price) != str(i[4]) or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:
-                    SQLHandler.update_product_list_flipkart(i[2], price, low_price, high_price, avg_price) 
+                    try:
+                        SQLHandler.update_product_list_flipkart(i[2], price, low_price, high_price, avg_price) 
+                    except:
+                        logger_update.error(f'Wasn\'t able to update database. ProductID: {i[2]}, Product Slug: {i[3]}')
                     #print('updated now fk')
                 else:
                     print('same')
