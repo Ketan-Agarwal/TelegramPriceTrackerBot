@@ -172,7 +172,6 @@ def datawatcher():
     watching()
     while True:
         wat = watcher()
-        print(f"watcher------------{wat}")
         if wat != None:
             returning, data_row = wat
             print(f"tg code ------------------------------ {data_row} -------- {returning}")
@@ -191,8 +190,6 @@ def datawatcher():
                 elif data_row[7] == 'Flipkart':
                     link = f"[Open Flipkart](https://www.flipkart.com/{data_row[9]}/p/{data_row[8]})"
                 asyncio.run(send_price(idss, current_price, desired_price, link, name))
-        else:
-            print("Data Not changed")
         time.sleep(1)
 
 if __name__ == '__main__':

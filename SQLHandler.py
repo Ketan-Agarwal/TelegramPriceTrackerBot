@@ -169,9 +169,6 @@ def watcher():
           if row not in rows:
             rows = new_rows
             return True, row
-    else:
-      print("not changed")
-  else:
     rows = new_rows
     print('new entry added')
 

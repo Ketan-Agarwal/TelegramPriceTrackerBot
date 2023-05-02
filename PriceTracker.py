@@ -157,6 +157,7 @@ def actual_updater():
             if data != None:
                 if price != i[4] or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:
                     try:
+                        logger_update.info(f'reached sql function flipkart updater with current price of {price} and prev price if {i[4]}')
                         SQLHandler.update_product_list_flipkart(i[2], price, low_price, high_price, avg_price) 
                     except:
                         logger_update.error(f'Wasn\'t able to update database. ProductID: {i[2]}, Product Slug: {i[3]}')
@@ -164,7 +165,7 @@ def actual_updater():
                 else:
                     logger_update.info('data seems same')
                     logger_update.info(f'DATA ----- {data} \n\n Data from DB: {i}')
-                return True
+                #return True
             else:
                 logger_update.error(f'data is none, website--- {i[0]}')
                 
@@ -176,4 +177,4 @@ def threader():
 thread = threading.Thread(target=threader)
 #thread.daemon = True
 thread.start()
-print(price_data("https://www.flipkart.com/"))
+#print(price_data("https://www.flipkart.com/"))
