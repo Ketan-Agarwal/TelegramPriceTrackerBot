@@ -137,7 +137,7 @@ def actual_updater():
                 avg_price = data['prices']['average_price']
                 high_price = data['prices']['highest_price']
                 print (price, "      latest vs DB price      ", i[4])
-                if price != str(i[4]) or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:    #BUG price was not a string in DB
+                if price != i[4] or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:    #BUG price was not a string in DB
                     try:
                         SQLHandler.update_product_list_amazon(i[1], price, low_price, high_price, avg_price)
                         logger_update.info(f'Current Price in DB was {i[4]} and the price got from crawler is {price}')
@@ -155,7 +155,7 @@ def actual_updater():
             link = f'https://www.flipkart.com/{i[3]}/p/{i[2]}'
             data = price_updater(link)
             if data != None:
-                if str(price) != str(i[4]) or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:
+                if price != i[4] or str(low_price) != i[5] or str(high_price) != i[6] or str(avg_price) != i[7]:
                     try:
                         SQLHandler.update_product_list_flipkart(i[2], price, low_price, high_price, avg_price) 
                     except:
