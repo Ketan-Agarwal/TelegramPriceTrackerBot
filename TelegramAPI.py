@@ -55,8 +55,8 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
                 #await context.bot.send_message(update.effective_chat.id, "Thanks For the info.")
                 context.user_data['desired_price_id'] = await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Input your desired price at which you want to be notified.\nCurrent Price: {context.user_data.get('price_data1')['prices']['price']}\n(⚠️ ONLY in reply to this message)")
-                add_pincode(context.user_data.get('uid'), context.user_data.get('pincode'))
-                print(context.user_data.get('pincode'))
+                #add_pincode(context.user_data.get('uid'), context.user_data.get('pincode'))
+                #print(context.user_data.get('pincode'))
             else:
                 await context.bot.send_message(chat_id=update.effective_chat.id, text="Please input your valid 6 digit pincode.")
         elif update.message.reply_to_message.message_id == context.user_data.get('desired_price_id').message_id:
